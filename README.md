@@ -6,10 +6,34 @@ Project is from DataCamp: https://app.datacamp.com/learn/projects/2264
 ## How it's made
 Language: Python 
 
-Packages: pandas, sklearn, seaborn and matplotlib
+Packages: pandas, scikit-learn, seaborn and matplotlib
 
-The data is loaded in from the csv file using pandas and explored to determine the distribution of the data and the data-types of all features. The target variable 'charges' was converted from a string to a float which required removing any '$' signs present. Categorical columns were checked by viewing the unique values, which showed that 'sex' had a mix of formats and 'region' had different capitalisations of the regions which were both fixed. Matplotlib and seaborn were then used to create boxplots for all the numerical columns to determine if outliers were present and the distribution of values. Negative values in children and age were detected which was corrected by taking the absolute values of all numerical columns. The number of outliers were then calaculated using the interquartile range of each numerical column which showed 8 'bmi' outliers and 145 'charges' outliers. The outliers in 'bmi' were left due to their small number but originally 'charges' was log transformed and square root transformed due to the outliers creating a right skew in the data. This ended up being removed as it caused many predicted results in 'charges' to be unrealistically large. Duplicate rows were then tested for and the 2 detected were dropped before missing values were evaluated. The number of missing values per column were identified as well as the number of total rows with null values. The total rows were then used to calculate the percentage of rows within the dataframe had missing values which resulted in 9.73% which could have been removed, however due to the small size of the dataset, maintaining as much data as possible is a priority. The missing values were visualised with a heatmap created with the packages matplotlib and sns. To begin with, all rows with missing values in the 'charges' column were dropped to prevent introducing bias into the target variable. This removed 65 rows, leaving another 65 rows with missing data which were split into rows to drop and impute based on whether more than 2 values were missing in the row. The rows to impute underwent two types of imputation using the sklearn package: iterative imputation for the numerical columns which uses other features to produce a value for the null value; and simple imputation on the categorical values as they cannot use the iterative imputer so the most-frequent value in the whole column is used for the null value. 
+### Data Preparation
+- Loaded the dataset with **pandas** and explored data types and distributions.  
+- Cleaned the target variable `charges` (removed `$` signs, converted to float).  
+- Standardized categorical values (`sex` and `region`) for consistency.  
+- Corrected negative values in numerical columns (`age`, `children`, `bmi`) by taking absolute values.  
+- Identified outliers using the IQR method: BMI outliers were kept due to low frequency, and no transformations were applied to `charges` to avoid unrealistic predictions.  
+- Removed duplicate rows.  
 
-After the data was cleaned, before a machine learning model could be created, pandas was used to One-Hot Encode the categorical values, turning them into multiple binary columns. The data was then split into the features and the target, 'charges' before being split into a training and testing set in a 80:20 ratio using sklearn. A pipeline was created with the StandardScaler from sklearn to ensure each feature has the same scale before a Linear Regression model is fitted using sklearn. This pipeline is given to sklearn's GridSearchCV which uses cross-validation to undergo hyperparamter tuning and identify the most optimal values for the model based on the parameters passed to it. The scoring was changed to ensure r^2 and root mean squared error were used to evaluate the models and r^2 was used to refit the data. The winning model was fitted on the training data and then predictions were made on the testing data which were then compared to the actual results providing both r^2 and rmse scores for the training and test data. 
+### Handling Missing Data
+- Visualized missing values with a **seaborn** heatmap.  
+- Dropped rows with missing `charges` values to avoid bias in the target variable.  
+- For other missing values:  
+  - Used **Iterative Imputation** for numerical featuresfrom **scikit-learn** that creates a value based on other features.  
+  - Used **Simple Imputation** for categorical features from **scikit-learn** that takes the most-frequent value.  
 
-Finally, pandas was used to load in the new validation dataset before the model is used to predict the 'charges' based on the features providedand the 'charges' predicted were then capped to being over 1000.
+### Feature Engineering
+- One-Hot Encoded categorical features with **pandas**.  
+- Split dataset into training (80%) and testing (20%) sets.  
+
+### Modeling
+- Built a machine learning pipeline with **StandardScaler** and **Linear Regression** using **scikit-learn**.  
+- Performed hyperparameter tuning with **GridSearchCV** (cross-validation) from **scikit-learn**.  
+- Evaluated models using **R²** and **RMSE**, and selected the best-performing configuration.  
+
+### Validation
+- Loaded an external validation dataset.  
+- Generated predictions for `charges` using the trained model.  
+- Applied post-processing by capping predictions to be greater than 1000.  
+
